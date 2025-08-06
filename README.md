@@ -49,11 +49,11 @@ python repo_manager.py
 1. รัน `run.bat`
 2. เลือกโฟลเดอร์โปรเจค
 3. ใส่ GitHub Token
-4. ใส่ชื่อ Owner และ Repository
-5. ใช้ Quick Actions ตามลำดับ:
-   - **1️⃣ Create Repository** (ถ้ายังไม่มี repo)
-   - **2️⃣ Push Files** (อัปโหลดไฟล์)
-   - **3️⃣ Create Release** (สร้าง release)
+4. ใส่ชื่อเจ้าของและ Repository
+5. ใช้ปุ่มหลักตามลำดับ:
+   - **📤 อัปโหลดไฟล์** (อัปโหลดไฟล์)
+   - **🎯 สร้าง Release** (สร้าง release)
+   - **🚀 ทำทั้งหมด** (ทำทั้งสองอย่าง)
 
 ### 🎯 Create Release Options
 เมื่อกดปุ่ม **3️⃣ Create Release** จะมีตัวเลือก 2 แบบ:
@@ -75,53 +75,44 @@ python repo_manager.py
 
 ### ปุ่มต่าง ๆ ในโปรแกรม
 
-#### 🚀 Quick Actions (ปุ่มหลัก)
+#### 🚀 ปุ่มหลัก (เรียบง่าย ไม่สับสน)
 | ปุ่ม | คำอธิบาย |
 |------|----------|
-| 1️⃣ Create Repository | สร้าง GitHub repository ใหม่ |
-| 2️⃣ Push Files | Commit และ push ไฟล์ไปยัง GitHub |
-| 3️⃣ Create Release | สร้าง GitHub release (Quick หรือ Custom) |
-| 4️⃣ Check Status | ตรวจสอบสถานะและการตั้งค่า |
+| 📤 อัปโหลดไฟล์ | Commit และ push ไฟล์ไปยัง GitHub |
+| 🎯 สร้าง Release | สร้าง GitHub release (เร็วหรือกำหนดเอง) |
+| 🚀 ทำทั้งหมด | อัปโหลดไฟล์และสร้าง release |
 
-#### 📋 Other Actions (เมนูเพิ่มเติม)
+#### 📋 ปุ่มเสริม
 | ปุ่ม | คำอธิบาย |
 |------|----------|
-| 🔄 Refresh Info | โหลดข้อมูล repository ใหม่ |
-| 📋 View Releases | เปิดหน้า releases ใน browser |
-| 🔧 Fix Remote | แก้ไข remote URL |
-| 🚀 Do All | Push ไฟล์และสร้าง release |
-| 🌐 Open GitHub | เปิด repository ใน browser |
-
-#### ⚡ Quick Buttons
-| ปุ่ม | คำอธิบาย |
-|------|----------|
-| 🔄 | รีเฟรชข้อมูล |
-| 📋 | ดู releases |
-| ❌ | ออกจากโปรแกรม |
+| 🔍 ตรวจสอบ | ตรวจสอบการตั้งค่าและสถานะ |
+| 📋 ดู Releases | เปิดหน้า releases ใน browser |
+| ❌ ออก | ออกจากโปรแกรม |
 
 ## 📸 หน้าตาโปรแกรม
 
 ```
-🐙 GitHub Repository Manager                    [Ready]
-═══════════════════════════════════════════════════════
+🐙 ตัวจัดการ GitHub Repository                    [พร้อมใช้งาน]
+═══════════════════════════════════════════════════════════════
 
-⚙️ Configuration
-📁 Project Folder: [C:\my-project] [Browse]
-🔑 GitHub Token: [**********] [Help]
-👤 Owner: [username]  📦 Repository: [repo-name]
+⚙️ การตั้งค่า
+📁 โฟลเดอร์โปรเจค: [C:\my-project] [เลือก]
+🔑 GitHub Token: [**********] [ช่วยเหลือ]
+👤 เจ้าของ: [username]  📦 ชื่อ Repository: [repo-name]
 
-🚀 Quick Actions
-┌─────────────────┬─────────────────┬─────────────────┬─────────────────┐
-│ 1️⃣ Create Repo  │ 2️⃣ Push Files   │ 3️⃣ Create Release│ 4️⃣ Check Status │
-└─────────────────┴─────────────────┴─────────────────┴─────────────────┘
+🚀 การดำเนินการ
+┌─────────────────┬─────────────────┬─────────────────┐
+│   📤 อัปโหลด    │   🎯 สร้าง      │   🚀 ทำทั้งหมด   │
+│     ไฟล์        │   Release       │                │
+└─────────────────┴─────────────────┴─────────────────┘
 
-Other Actions: [Select Action...] ▼     [🔄] [📋] [❌]
+[🔍 ตรวจสอบ] [📋 ดู Releases]                    [❌ ออก]
 
-📝 Activity Log                                    [Clear]
-[12:34:56] 🚀 GitHub Repository Manager ready
-[12:34:57] 📁 Found repository: username/repo-name
-[12:35:00] 🔧 Running command: git add .
-[12:35:01] ✅ Push completed successfully!
+📝 บันทึกการทำงาน                                [ล้าง]
+[12:34:56] 🚀 ตัวจัดการ GitHub Repository พร้อมใช้งาน
+[12:34:57] 📁 พบ repository: username/repo-name
+[12:35:00] 🔧 รันคำสั่ง: git add .
+[12:35:01] ✅ อัปโหลดเสร็จสิ้น!
 ```
 
 ## 🔍 การแก้ไขปัญหา

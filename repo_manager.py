@@ -26,7 +26,7 @@ class RepoManagerGUI:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Repository & Release Manager")
-        self.root.geometry("900x700")
+        self.root.geometry("1000x750")
         self.root.configure(bg='#f0f0f0')
         
         # ตัวแปร
@@ -432,12 +432,14 @@ class RepoManagerGUI:
                 name = messagebox.askstring("Git Config", "ใส่ชื่อผู้ใช้ Git:")
                 if name:
                     self.run_command(f'git config user.name "{name}"')
+                    self.log(f"✅ ตั้งค่า git user.name: {name}")
                     
             if not email_result or not email_result.stdout.strip():
                 self.log("⚠️ ไม่พบ git user.email")
                 email = messagebox.askstring("Git Config", "ใส่อีเมล Git:")
                 if email:
                     self.run_command(f'git config user.email "{email}"')
+                    self.log(f"✅ ตั้งค่า git user.email: {email}")
                     
         except Exception as e:
             self.log(f"ข้อผิดพลาดในการตรวจสอบ git config: {e}")
@@ -616,76 +618,22 @@ class RepoManagerGUI:
     def create_release(self):
         """สร้าง release"""
         if not self.github_token.get():
-            messagebox.showerror("Error", "Please enter GitHub Token")
+            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ GitHub Token")
             return
             
         if not self.repo_owner.get() or not self.repo_name.get():
-            messagebox.showerror("Error", "Please enter Owner and Repository")
+            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ชื่อเจ้าของและ Repository")
             return
             
-        self.show_release_options()
-    
-    def show_release_options(self):
-        """แสดงตัวเลือกการสร้าง release"""
-        dialog = tk.Toplevel(self.root)
-        dialog.title("สร้าง Release")
-        dialog.geometry("400x250")
-        dialog.transient(self.root)
-        dialog.grab_set()
-        dialog.configure(bg=self.colors['surface'])
-        
-        # Center the dialog
-        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
-        
-        # Header
-        header_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        header_frame.pack(fill='x', padx=20, pady=20)
-        
-        tk.Label(header_frame, text="🎯 สร้าง GitHub Release", 
-                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
-                bg=self.colors['surface']).pack()
-        
-        tk.Label(header_frame, text="เลือกวิธีการสร้าง release", 
-                font=('Segoe UI', 10), fg=self.colors['text_muted'],
-                bg=self.colors['surface']).pack(pady=(5, 0))
-        
-        # Options frame
-        options_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        options_frame.pack(fill='both', expand=True, padx=20, pady=10)
-        
-        # Quick Create option
-        quick_btn = tk.Button(options_frame, text="⚡ สร้างแบบเร็ว\n(เลือกเวอร์ชันได้)", 
-                             command=lambda: self.quick_create_release(dialog),
-                             font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
-                             fg='white', relief='flat', cursor='hand2', 
-                             width=25, height=3)
-        quick_btn.pack(pady=(0, 15))
-        
-        # Custom Create option
-        custom_btn = tk.Button(options_frame, text="🛠️ สร้างแบบกำหนดเอง\n(ปรับแต่งทุกอย่าง)", 
-                              command=lambda: self.show_release_dialog(dialog),
-                              font=('Segoe UI', 12, 'bold'), bg=self.colors['info'], 
-                              fg='white', relief='flat', cursor='hand2', 
-                              width=25, height=3)
-        custom_btn.pack(pady=(0, 15))
-        
-        # Cancel button
-        cancel_btn = tk.Button(options_frame, text="ยกเลิก", 
-                              command=dialog.destroy,
-                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
-                              fg='white', relief='flat', cursor='hand2', width=15)
-        cancel_btn.pack()
-    
-    def quick_create_release(self, parent_dialog):
-        """สร้าง release แบบเร็ว"""
-        parent_dialog.destroy()
         self.show_quick_release_dialog()
     
+
+
     def show_quick_release_dialog(self):
         """แสดงหน้าต่างสำหรับ quick release"""
         dialog = tk.Toplevel(self.root)
-        dialog.title("สร้างแบบเร็ว")
-        dialog.geometry("480x400")
+        dialog.title("สร้าง Release")
+        dialog.geometry("650x550")
         dialog.transient(self.root)
         dialog.grab_set()
         dialog.configure(bg=self.colors['surface'])
@@ -702,13 +650,18 @@ class RepoManagerGUI:
         header_frame = tk.Frame(dialog, bg=self.colors['surface'])
         header_frame.pack(fill='x', padx=20, pady=20)
         
-        tk.Label(header_frame, text="⚡ สร้าง Release แบบเร็ว", 
-                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
+        tk.Label(header_frame, text="🎯 สร้าง GitHub Release", 
+                font=('Segoe UI', 18, 'bold'), fg=self.colors['text'],
                 bg=self.colors['surface']).pack()
         
         tk.Label(header_frame, text=f"เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
-                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                font=('Segoe UI', 11), fg=self.colors['text_muted'],
                 bg=self.colors['surface']).pack(pady=(5, 0))
+        
+        # Credit
+        tk.Label(header_frame, text="👨‍💻 สร้างโดย ZirconX", 
+                font=('Segoe UI', 9), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(2, 0))
         
         # Content
         content_frame = tk.Frame(dialog, bg=self.colors['surface'])
@@ -754,21 +707,19 @@ class RepoManagerGUI:
                             relief='flat', cursor='hand2', width=12)
         next_btn.pack(side='left')
         
-        # Preview
-        tk.Label(content_frame, text="📝 รายละเอียด Release:", 
-                font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+        # Release Notes - Editable
+        tk.Label(content_frame, text="📝 รายละเอียด Release (แก้ไขได้):", 
+                font=('Segoe UI', 11, 'bold'), fg=self.colors['text'],
                 bg=self.colors['surface']).pack(anchor='w', pady=(15, 5))
         
         changelog = self.generate_changelog(latest_tag)
-        preview_text = tk.Text(content_frame, height=8, width=55,
-                              bg=self.colors['bg'], fg=self.colors['text_muted'],
-                              font=('Segoe UI', 9), relief='solid', bd=1,
-                              state='disabled')
-        preview_text.pack(anchor='w', pady=(0, 15))
+        notes_text = tk.Text(content_frame, height=12, width=70,
+                            bg=self.colors['bg'], fg=self.colors['text'],
+                            font=('Segoe UI', 10), relief='solid', bd=1,
+                            insertbackground=self.colors['text'], wrap='word')
+        notes_text.pack(anchor='w', pady=(0, 15), fill='both', expand=True)
         
-        preview_text.config(state='normal')
-        preview_text.insert('1.0', changelog)
-        preview_text.config(state='disabled')
+        notes_text.insert('1.0', changelog)
         
         # Buttons
         btn_frame = tk.Frame(dialog, bg=self.colors['surface'])
@@ -784,18 +735,27 @@ class RepoManagerGUI:
                 messagebox.showerror("ข้อผิดพลาด", f"เวอร์ชัน {new_version} มีอยู่แล้ว!")
                 return
             
+            # Get edited release notes
+            release_notes = notes_text.get('1.0', 'end-1c').strip()
+            if not release_notes:
+                release_notes = f"Release {new_version}"
+            
             dialog.destroy()
-            self.do_quick_release(new_version, changelog)
+            self.do_quick_release(new_version, release_notes)
         
-        create_btn = tk.Button(btn_frame, text="🚀 สร้าง Release", 
+        # Center the buttons
+        btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
+        btn_container.pack(expand=True)
+        
+        create_btn = tk.Button(btn_container, text="🚀 สร้าง Release", 
                               command=create_quick_release,
-                              font=('Segoe UI', 11, 'bold'), bg=self.colors['primary'], 
-                              fg='white', relief='flat', cursor='hand2', width=15, height=2)
-        create_btn.pack(side='left', padx=(0, 10))
+                              font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
+                              fg='white', relief='flat', cursor='hand2', width=18, height=2)
+        create_btn.pack(side='left', padx=(0, 15))
         
-        cancel_btn = tk.Button(btn_frame, text="ยกเลิก", command=dialog.destroy,
-                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
-                              fg='white', relief='flat', cursor='hand2', width=10)
+        cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
+                              font=('Segoe UI', 11), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=12, height=2)
         cancel_btn.pack(side='left')
     
     def get_all_tags(self):
@@ -1253,6 +1213,8 @@ class RepoManagerGUI:
         """รันโปรแกรม"""
         self.log("🚀 Repository & Release Manager พร้อมใช้งาน")
         self.log("💡 เลือกโฟลเดอร์และใส่ GitHub Token เพื่อเริ่มใช้งาน")
+        self.log("👨‍💻 สร้างโดย ZirconX - ขอบคุณที่ใช้งาน!")
+        self.log("📄 MIT License - ใช้งานได้อย่างอิสระ")
         self.root.mainloop()
 
 def main():
