@@ -1089,13 +1089,13 @@ class RepoManagerGUI:
         """แสดงหน้าต่างเลือกเวอร์ชันสำหรับ ทำทั้งหมด"""
         dialog = tk.Toplevel(self.root)
         dialog.title("ขั้นตอนที่ 2: สร้าง Release")
-        dialog.geometry("550x400")
+        dialog.geometry("700x600")
         dialog.transient(self.root)
         dialog.grab_set()
         dialog.configure(bg=self.colors['surface'])
         
         # Center the dialog
-        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 100, self.root.winfo_rooty() + 100))
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
         
         # Get version info
         latest_tag = self.get_latest_tag()
@@ -1107,12 +1107,12 @@ class RepoManagerGUI:
         header_frame.pack(fill='x', padx=20, pady=20)
         
         tk.Label(header_frame, text="🎯 ขั้นตอนที่ 2: สร้าง Release", 
-                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
+                font=('Segoe UI', 18, 'bold'), fg=self.colors['text'],
                 bg=self.colors['surface']).pack()
         
         tk.Label(header_frame, text=f"✅ Push ไฟล์เสร็จแล้ว | เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
-                font=('Segoe UI', 10), fg=self.colors['text_muted'],
-                bg=self.colors['surface']).pack(pady=(5, 0))
+                font=('Segoe UI', 12), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(8, 0))
         
         # Content
         content_frame = tk.Frame(dialog, bg=self.colors['surface'])
@@ -1121,31 +1121,31 @@ class RepoManagerGUI:
         # Show existing tags
         if all_tags:
             tk.Label(content_frame, text="📋 เวอร์ชันที่มีอยู่:", 
-                    font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
-                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+                    font=('Segoe UI', 12, 'bold'), fg=self.colors['text'],
+                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 8))
             
-            tags_text = ", ".join(all_tags[:6])  # Show first 6 tags
-            if len(all_tags) > 6:
-                tags_text += f" ... (อีก {len(all_tags)-6} เวอร์ชัน)"
+            tags_text = ", ".join(all_tags[:8])  # Show first 8 tags
+            if len(all_tags) > 8:
+                tags_text += f" ... (อีก {len(all_tags)-8} เวอร์ชัน)"
             
             tk.Label(content_frame, text=tags_text, 
-                    font=('Segoe UI', 9), fg=self.colors['text_muted'],
-                    bg=self.colors['surface'], wraplength=500, justify='left').pack(anchor='w', pady=(0, 15))
+                    font=('Segoe UI', 11), fg=self.colors['text_muted'],
+                    bg=self.colors['surface'], wraplength=650, justify='left').pack(anchor='w', pady=(0, 20))
         
         # Version selection
         tk.Label(content_frame, text="🏷️ เลือกเวอร์ชันใหม่:", 
-                font=('Segoe UI', 11, 'bold'), fg=self.colors['text'],
-                bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+                font=('Segoe UI', 13, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(0, 8))
         
         version_frame = tk.Frame(content_frame, bg=self.colors['surface'])
-        version_frame.pack(fill='x', pady=(0, 15))
+        version_frame.pack(fill='x', pady=(0, 20))
         
         version_var = tk.StringVar(value=suggested_version)
         version_entry = tk.Entry(version_frame, textvariable=version_var, 
-                                font=('Segoe UI', 12), bg=self.colors['bg'], 
+                                font=('Segoe UI', 14), bg=self.colors['bg'], 
                                 fg=self.colors['text'], insertbackground=self.colors['text'],
-                                relief='solid', bd=1, width=15)
-        version_entry.pack(side='left', padx=(0, 15))
+                                relief='solid', bd=1, width=18)
+        version_entry.pack(side='left', padx=(0, 20))
         
         # Next version button
         def next_version():
@@ -1154,21 +1154,21 @@ class RepoManagerGUI:
             version_var.set(new_ver)
         
         next_btn = tk.Button(version_frame, text="เวอร์ชันถัดไป", command=next_version,
-                            font=('Segoe UI', 10), bg=self.colors['primary'], fg='white',
-                            relief='flat', cursor='hand2', width=12)
+                            font=('Segoe UI', 11), bg=self.colors['primary'], fg='white',
+                            relief='flat', cursor='hand2', width=14, height=2)
         next_btn.pack(side='left')
         
         # Release notes
-        tk.Label(content_frame, text="📝 รายละเอียด Release:", 
-                font=('Segoe UI', 11, 'bold'), fg=self.colors['text'],
-                bg=self.colors['surface']).pack(anchor='w', pady=(15, 5))
+        tk.Label(content_frame, text="📝 รายละเอียด Release (แก้ไขได้):", 
+                font=('Segoe UI', 13, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(0, 8))
         
         changelog = self.generate_changelog(latest_tag)
-        notes_text = tk.Text(content_frame, height=8, width=60,
+        notes_text = tk.Text(content_frame, height=12, width=80,
                             bg=self.colors['bg'], fg=self.colors['text'],
-                            font=('Segoe UI', 9), relief='solid', bd=1,
+                            font=('Segoe UI', 11), relief='solid', bd=1,
                             insertbackground=self.colors['text'], wrap='word')
-        notes_text.pack(anchor='w', pady=(0, 15), fill='both', expand=True)
+        notes_text.pack(anchor='w', pady=(0, 20), fill='both', expand=True)
         
         notes_text.insert('1.0', changelog)
         
@@ -1194,36 +1194,28 @@ class RepoManagerGUI:
             dialog.destroy()
             self.do_final_release(new_version, release_notes)
         
-        def skip_release():
-            dialog.destroy()
-            self.log("⚠️ ข้าม release - เสร็จสิ้นเฉพาะ Push ไฟล์")
-            self.status_var.set("เสร็จสิ้น (ข้าม Release)")
-        
-        # Center the buttons
+
+        # Center the buttons - simplified to 2 main buttons
         btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
         btn_container.pack(expand=True)
         
         # Main OK button (most prominent)
         ok_btn = tk.Button(btn_container, text="✅ ตกลง - สร้าง Release", 
                           command=create_final_release,
-                          font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
-                          fg='white', relief='flat', cursor='hand2', width=20, height=2)
-        ok_btn.pack(side='left', padx=(0, 15))
+                          font=('Segoe UI', 14, 'bold'), bg=self.colors['primary'], 
+                          fg='white', relief='flat', cursor='hand2', width=22, height=3)
+        ok_btn.pack(side='left', padx=(0, 20))
         
-        # Secondary buttons
-        skip_btn = tk.Button(btn_container, text="⏭️ ข้าม", command=skip_release,
-                            font=('Segoe UI', 10), bg=self.colors['warning'], 
-                            fg='white', relief='flat', cursor='hand2', width=8, height=2)
-        skip_btn.pack(side='left', padx=(0, 10))
-        
+        # Cancel button
         cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
-                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
-                              fg='white', relief='flat', cursor='hand2', width=8, height=2)
+                              font=('Segoe UI', 12), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=12, height=3)
         cancel_btn.pack(side='left')
         
         # Make OK button the default (Enter key)
         ok_btn.focus_set()
         dialog.bind('<Return>', lambda e: create_final_release())
+        dialog.bind('<Escape>', lambda e: dialog.destroy())
     
     def do_final_release(self, version, release_notes):
         """สร้าง release ขั้นตอนสุดท้าย"""
