@@ -39,99 +39,307 @@ class RepoManagerGUI:
         self.load_repo_info()
         
     def setup_ui(self):
-        """สร้าง UI"""
-        # Title
-        title_frame = tk.Frame(self.root, bg='#2c3e50', height=60)
-        title_frame.pack(fill='x')
-        title_frame.pack_propagate(False)
+        """สร้าง UI ธีม GitHub"""
+        # GitHub Colors
+        self.colors = {
+            'bg': '#0d1117',           # GitHub dark background
+            'surface': '#161b22',      # GitHub surface
+            'border': '#30363d',       # GitHub border
+            'text': '#f0f6fc',         # GitHub text
+            'text_muted': '#8b949e',   # GitHub muted text
+            'primary': '#238636',      # GitHub green
+            'danger': '#da3633',       # GitHub red
+            'warning': '#d29922',      # GitHub yellow
+            'info': '#1f6feb',         # GitHub blue
+            'secondary': '#6e7681',    # GitHub gray
+        }
         
-        tk.Label(title_frame, text="🚀 Repository & Release Manager", 
-                font=('Arial', 16, 'bold'), fg='white', bg='#2c3e50').pack(pady=15)
+        # Configure root
+        self.root.configure(bg=self.colors['bg'])
         
-        # Main frame
-        main_frame = tk.Frame(self.root, bg='#f0f0f0')
-        main_frame.pack(fill='both', expand=True, padx=15, pady=15)
+        # Header
+        header_frame = tk.Frame(self.root, bg=self.colors['surface'], height=70)
+        header_frame.pack(fill='x', padx=2, pady=2)
+        header_frame.pack_propagate(False)
         
-        # Settings
-        settings_frame = tk.LabelFrame(main_frame, text="การตั้งค่า", font=('Arial', 11, 'bold'))
-        settings_frame.pack(fill='x', pady=(0, 10))
+        # GitHub-style header
+        header_content = tk.Frame(header_frame, bg=self.colors['surface'])
+        header_content.pack(expand=True, fill='both', padx=20, pady=15)
+        
+        tk.Label(header_content, text="🐙 ตัวจัดการ GitHub Repository", 
+                font=('Segoe UI', 18, 'bold'), fg=self.colors['text'], 
+                bg=self.colors['surface']).pack(side='left')
+        
+        # Status indicator
+        self.status_var = tk.StringVar(value="พร้อมใช้งาน")
+        status_label = tk.Label(header_content, textvariable=self.status_var,
+                               font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                               bg=self.colors['surface'])
+        status_label.pack(side='right')
+        
+        # Main container
+        main_container = tk.Frame(self.root, bg=self.colors['bg'])
+        main_container.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        # Settings Panel
+        settings_panel = tk.Frame(main_container, bg=self.colors['surface'], 
+                                 relief='solid', bd=1)
+        settings_panel.pack(fill='x', pady=(0, 10))
+        
+        # Settings header
+        settings_header = tk.Frame(settings_panel, bg=self.colors['surface'])
+        settings_header.pack(fill='x', padx=15, pady=(15, 10))
+        
+        tk.Label(settings_header, text="⚙️ การตั้งค่า", 
+                font=('Segoe UI', 12, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(side='left')
+        
+        # Settings content
+        settings_content = tk.Frame(settings_panel, bg=self.colors['surface'])
+        settings_content.pack(fill='x', padx=15, pady=(0, 15))
         
         # Project path
-        tk.Label(settings_frame, text="โฟลเดอร์โปรเจค:").grid(row=0, column=0, sticky='w', padx=10, pady=8)
-        path_frame = tk.Frame(settings_frame)
-        path_frame.grid(row=0, column=1, sticky='ew', padx=10, pady=8)
-        settings_frame.columnconfigure(1, weight=1)
-        
-        self.path_entry = tk.Entry(path_frame, textvariable=self.project_path, width=60)
-        self.path_entry.pack(side='left', fill='x', expand=True)
-        tk.Button(path_frame, text="เลือก", command=self.browse_folder).pack(side='right', padx=(5,0))
+        self.create_input_field(settings_content, "📁 โฟลเดอร์โปรเจค:", 
+                               self.project_path, 0, browse=True)
         
         # GitHub token
-        tk.Label(settings_frame, text="GitHub Token:").grid(row=1, column=0, sticky='w', padx=10, pady=8)
-        token_frame = tk.Frame(settings_frame)
-        token_frame.grid(row=1, column=1, sticky='ew', padx=10, pady=8)
-        
-        self.token_entry = tk.Entry(token_frame, textvariable=self.github_token, show='*', width=50)
-        self.token_entry.pack(side='left', fill='x', expand=True)
-        tk.Button(token_frame, text="ช่วยเหลือ", command=self.show_token_help).pack(side='right', padx=(5,0))
+        self.create_input_field(settings_content, "🔑 GitHub Token:", 
+                               self.github_token, 1, password=True, help=True)
         
         # Repository info
-        tk.Label(settings_frame, text="Owner:").grid(row=2, column=0, sticky='w', padx=10, pady=8)
-        tk.Entry(settings_frame, textvariable=self.repo_owner, width=30).grid(row=2, column=1, sticky='w', padx=10, pady=8)
+        repo_frame = tk.Frame(settings_content, bg=self.colors['surface'])
+        repo_frame.grid(row=2, column=0, columnspan=2, sticky='ew', pady=5)
+        repo_frame.columnconfigure(1, weight=1)
+        repo_frame.columnconfigure(3, weight=1)
         
-        tk.Label(settings_frame, text="Repository:").grid(row=3, column=0, sticky='w', padx=10, pady=8)
-        tk.Entry(settings_frame, textvariable=self.repo_name, width=30).grid(row=3, column=1, sticky='w', padx=10, pady=8)
+        tk.Label(repo_frame, text="👤 เจ้าของ:", font=('Segoe UI', 10),
+                fg=self.colors['text'], bg=self.colors['surface']).grid(row=0, column=0, sticky='w', padx=(0,10))
         
-        # Buttons
-        btn_frame = tk.Frame(main_frame)
-        btn_frame.pack(fill='x', pady=10)
+        owner_entry = tk.Entry(repo_frame, textvariable=self.repo_owner, 
+                              font=('Segoe UI', 10), bg=self.colors['bg'], 
+                              fg=self.colors['text'], insertbackground=self.colors['text'],
+                              relief='solid', bd=1)
+        owner_entry.grid(row=0, column=1, sticky='ew', padx=(0,20))
         
-        tk.Button(btn_frame, text="📤 Push ไฟล์", command=self.push_files, 
-                 bg='#27ae60', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=2).pack(side='left', padx=5)
+        tk.Label(repo_frame, text="📦 ชื่อ Repository:", font=('Segoe UI', 10),
+                fg=self.colors['text'], bg=self.colors['surface']).grid(row=0, column=2, sticky='w', padx=(0,10))
         
-        tk.Button(btn_frame, text="🎯 สร้าง Release", command=self.create_release, 
-                 bg='#e74c3c', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=2).pack(side='left', padx=5)
+        repo_entry = tk.Entry(repo_frame, textvariable=self.repo_name, 
+                             font=('Segoe UI', 10), bg=self.colors['bg'], 
+                             fg=self.colors['text'], insertbackground=self.colors['text'],
+                             relief='solid', bd=1)
+        repo_entry.grid(row=0, column=3, sticky='ew')
         
-        tk.Button(btn_frame, text="🚀 ทำทั้งหมด", command=self.do_all, 
-                 bg='#9b59b6', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=2).pack(side='left', padx=5)
+        settings_content.columnconfigure(1, weight=1)
         
-        tk.Button(btn_frame, text="🔄 รีเฟรช", command=self.refresh_info, 
-                 bg='#34495e', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=2).pack(side='left', padx=5)
+        # Action Buttons Panel
+        actions_panel = tk.Frame(main_container, bg=self.colors['surface'], 
+                                relief='solid', bd=1)
+        actions_panel.pack(fill='x', pady=(0, 10))
         
-        tk.Button(btn_frame, text="📋 ดู Releases", command=self.view_releases, 
-                 bg='#16a085', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=2).pack(side='left', padx=5)
+        # Actions header
+        actions_header = tk.Frame(actions_panel, bg=self.colors['surface'])
+        actions_header.pack(fill='x', padx=15, pady=(15, 10))
         
-        tk.Button(btn_frame, text="🔍 ตรวจสอบ", command=self.check_setup, 
-                 bg='#f39c12', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=2).pack(side='left', padx=5)
+        tk.Label(actions_header, text="🚀 การดำเนินการ", 
+                font=('Segoe UI', 12, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(side='left')
         
-        # Second row of buttons
-        btn_frame2 = tk.Frame(main_frame)
-        btn_frame2.pack(fill='x', pady=5)
+        # Main action buttons - simplified to 3 main buttons
+        main_actions = tk.Frame(actions_panel, bg=self.colors['surface'])
+        main_actions.pack(fill='x', padx=15, pady=(0, 15))
         
-        tk.Button(btn_frame2, text="🔧 แก้ไข Remote", command=self.fix_remote_manual, 
-                 bg='#e67e22', fg='white', font=('Arial', 10, 'bold'), 
-                 width=12, height=1).pack(side='left', padx=5)
+        # Primary actions (3 main buttons only)
+        primary_frame = tk.Frame(main_actions, bg=self.colors['surface'])
+        primary_frame.pack(fill='x', pady=(0, 15))
         
-        # Log
-        log_frame = tk.LabelFrame(main_frame, text="Log", font=('Arial', 11, 'bold'))
-        log_frame.pack(fill='both', expand=True, pady=(10, 0))
+        self.create_action_button(primary_frame, "📤 อัปโหลดไฟล์", 
+                                 self.push_files, self.colors['primary'], 0, 0, large=True)
         
-        self.log_text = scrolledtext.ScrolledText(log_frame, height=15, 
-                                                 bg='#2c3e50', fg='#ecf0f1', 
-                                                 font=('Consolas', 9))
-        self.log_text.pack(fill='both', expand=True, padx=10, pady=10)
+        self.create_action_button(primary_frame, "🎯 สร้าง Release", 
+                                 self.create_release, self.colors['warning'], 0, 1, large=True)
         
-        # Status
-        self.status_var = tk.StringVar(value="พร้อมใช้งาน")
-        status_bar = tk.Label(self.root, textvariable=self.status_var, 
-                            relief='sunken', anchor='w')
-        status_bar.pack(side='bottom', fill='x')
+        self.create_action_button(primary_frame, "🚀 ทำทั้งหมด", 
+                                 self.do_all, self.colors['info'], 0, 2, large=True)
+        
+        # Configure grid weights for 3 buttons
+        for i in range(3):
+            primary_frame.columnconfigure(i, weight=1)
+        
+        # Secondary actions - simplified
+        secondary_frame = tk.Frame(main_actions, bg=self.colors['surface'])
+        secondary_frame.pack(fill='x')
+        
+        # Left side - simple buttons
+        left_frame = tk.Frame(secondary_frame, bg=self.colors['surface'])
+        left_frame.pack(side='left')
+        
+        tk.Button(left_frame, text="🔍 ตรวจสอบ", command=self.check_setup,
+                 font=('Segoe UI', 9), bg=self.colors['secondary'], fg='white',
+                 relief='flat', cursor='hand2', width=10).pack(side='left', padx=(0, 5))
+        
+        tk.Button(left_frame, text="📋 ดู Releases", command=self.view_releases,
+                 font=('Segoe UI', 9), bg=self.colors['secondary'], fg='white',
+                 relief='flat', cursor='hand2', width=12).pack(side='left', padx=5)
+        
+        # Right side - exit button
+        right_frame = tk.Frame(secondary_frame, bg=self.colors['surface'])
+        right_frame.pack(side='right')
+        
+        tk.Button(right_frame, text="❌ ออก", command=self.root.quit,
+                 font=('Segoe UI', 9), bg=self.colors['danger'], fg='white',
+                 relief='flat', cursor='hand2', width=8).pack()
+        
+        # Log Panel
+        log_panel = tk.Frame(main_container, bg=self.colors['surface'], 
+                            relief='solid', bd=1)
+        log_panel.pack(fill='both', expand=True)
+        
+        # Log header
+        log_header = tk.Frame(log_panel, bg=self.colors['surface'])
+        log_header.pack(fill='x', padx=15, pady=(15, 10))
+        
+        tk.Label(log_header, text="📝 บันทึกการทำงาน", 
+                font=('Segoe UI', 12, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(side='left')
+        
+        # Clear log button
+        clear_btn = tk.Button(log_header, text="ล้าง", font=('Segoe UI', 9),
+                             bg=self.colors['secondary'], fg='white', relief='flat',
+                             command=self.clear_log, cursor='hand2')
+        clear_btn.pack(side='right')
+        
+        # Log content
+        log_content = tk.Frame(log_panel, bg=self.colors['surface'])
+        log_content.pack(fill='both', expand=True, padx=15, pady=(0, 15))
+        
+        self.log_text = scrolledtext.ScrolledText(log_content, height=12, 
+                                                 bg=self.colors['bg'], fg=self.colors['text'], 
+                                                 font=('Consolas', 10), relief='solid', bd=1,
+                                                 insertbackground=self.colors['text'])
+        self.log_text.pack(fill='both', expand=True)
+        
+    def create_input_field(self, parent, label, variable, row, browse=False, password=False, help=False):
+        """สร้างช่องกรอกข้อมูล"""
+        tk.Label(parent, text=label, font=('Segoe UI', 10),
+                fg=self.colors['text'], bg=self.colors['surface']).grid(row=row, column=0, sticky='w', pady=5)
+        
+        field_frame = tk.Frame(parent, bg=self.colors['surface'])
+        field_frame.grid(row=row, column=1, sticky='ew', padx=(10, 0), pady=5)
+        field_frame.columnconfigure(0, weight=1)
+        
+        entry = tk.Entry(field_frame, textvariable=variable, font=('Segoe UI', 10),
+                        bg=self.colors['bg'], fg=self.colors['text'], 
+                        insertbackground=self.colors['text'], relief='solid', bd=1,
+                        show='*' if password else '')
+        entry.grid(row=0, column=0, sticky='ew', padx=(0, 5))
+        
+        if browse:
+            browse_btn = tk.Button(field_frame, text="เลือก", font=('Segoe UI', 9),
+                                  bg=self.colors['secondary'], fg='white', relief='flat',
+                                  command=self.browse_folder, cursor='hand2')
+            browse_btn.grid(row=0, column=1)
+        
+        if help:
+            help_btn = tk.Button(field_frame, text="ช่วยเหลือ", font=('Segoe UI', 9),
+                                bg=self.colors['info'], fg='white', relief='flat',
+                                command=self.show_token_help, cursor='hand2')
+            help_btn.grid(row=0, column=2 if browse else 1, padx=(5, 0))
+    
+    def create_action_button(self, parent, text, command, color, row, col, large=False):
+        """สร้างปุ่มหลัก"""
+        height = 3 if large else 2
+        width = 18 if large else 15
+        
+        btn = tk.Button(parent, text=text, command=command, 
+                       font=('Segoe UI', 10, 'bold'), bg=color, fg='white',
+                       relief='flat', height=height, width=width, cursor='hand2')
+        btn.grid(row=row, column=col, padx=5, pady=5, sticky='ew')
+        
+        # Hover effects
+        def on_enter(e):
+            btn.configure(bg=self.darken_color(color))
+        def on_leave(e):
+            btn.configure(bg=color)
+        
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+    
+    def create_small_button(self, parent, text, command, color, tooltip):
+        """สร้างปุ่มเล็ก"""
+        btn = tk.Button(parent, text=text, command=command, 
+                       font=('Segoe UI', 10), bg=color, fg='white',
+                       relief='flat', width=3, height=1, cursor='hand2')
+        btn.pack(side='left', padx=2)
+        
+        # Tooltip
+        self.create_tooltip(btn, tooltip)
+    
+    def create_tooltip(self, widget, text):
+        """สร้าง tooltip"""
+        def on_enter(event):
+            tooltip = tk.Toplevel()
+            tooltip.wm_overrideredirect(True)
+            tooltip.wm_geometry(f"+{event.x_root+10}+{event.y_root+10}")
+            label = tk.Label(tooltip, text=text, background=self.colors['surface'],
+                           foreground=self.colors['text'], relief='solid', bd=1,
+                           font=('Segoe UI', 9))
+            label.pack()
+            widget.tooltip = tooltip
+        
+        def on_leave(event):
+            if hasattr(widget, 'tooltip'):
+                widget.tooltip.destroy()
+                del widget.tooltip
+        
+        widget.bind("<Enter>", on_enter)
+        widget.bind("<Leave>", on_leave)
+    
+    def darken_color(self, color):
+        """ทำให้สีเข้มขึ้น"""
+        color_map = {
+            self.colors['primary']: '#1f7a2e',
+            self.colors['danger']: '#b92d2b',
+            self.colors['warning']: '#b8851c',
+            self.colors['info']: '#1a5fb4',
+            self.colors['secondary']: '#5a6169',
+        }
+        return color_map.get(color, color)
+    
+
+    def clear_log(self):
+        """ล้าง log"""
+        self.log_text.delete(1.0, tk.END)
+        self.log("📝 ล้างบันทึกแล้ว")
+    
+    def create_repo_only(self):
+        """สร้าง repository เท่านั้น"""
+        if not self.github_token.get():
+            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ GitHub Token")
+            return
+        if not self.repo_owner.get() or not self.repo_name.get():
+            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ชื่อเจ้าของและ Repository")
+            return
+        
+        def create_thread():
+            self.status_var.set("กำลังสร้าง repository...")
+            if self.create_repository():
+                self.log("✅ สร้าง Repository สำเร็จ!")
+                self.status_var.set("สร้าง Repository สำเร็จ")
+                messagebox.showinfo("สำเร็จ", "สร้าง Repository สำเร็จ!")
+            else:
+                self.status_var.set("สร้าง Repository ล้มเหลว")
+            
+        threading.Thread(target=create_thread, daemon=True).start()
+    
+    def open_github(self):
+        """เปิด GitHub repository"""
+        if self.repo_owner.get() and self.repo_name.get():
+            url = f"https://github.com/{self.repo_owner.get()}/{self.repo_name.get()}"
+            webbrowser.open(url)
+            self.log(f"🌐 Opened: {url}")
+        else:
+            messagebox.showwarning("คำเตือน", "กรุณาใส่ชื่อเจ้าของและ Repository")
         
     def log(self, message):
         """เพิ่มข้อความใน log"""
@@ -408,61 +616,336 @@ class RepoManagerGUI:
     def create_release(self):
         """สร้าง release"""
         if not self.github_token.get():
-            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ GitHub Token")
+            messagebox.showerror("Error", "Please enter GitHub Token")
             return
             
         if not self.repo_owner.get() or not self.repo_name.get():
-            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ Owner และ Repository")
+            messagebox.showerror("Error", "Please enter Owner and Repository")
             return
             
-        self.show_release_dialog()
-        
-    def show_release_dialog(self):
-        """หน้าต่างสร้าง release"""
+        self.show_release_options()
+    
+    def show_release_options(self):
+        """แสดงตัวเลือกการสร้าง release"""
         dialog = tk.Toplevel(self.root)
         dialog.title("สร้าง Release")
-        dialog.geometry("500x400")
+        dialog.geometry("400x250")
         dialog.transient(self.root)
         dialog.grab_set()
+        dialog.configure(bg=self.colors['surface'])
+        
+        # Center the dialog
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
+        
+        # Header
+        header_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        header_frame.pack(fill='x', padx=20, pady=20)
+        
+        tk.Label(header_frame, text="🎯 สร้าง GitHub Release", 
+                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack()
+        
+        tk.Label(header_frame, text="เลือกวิธีการสร้าง release", 
+                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(5, 0))
+        
+        # Options frame
+        options_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        options_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        # Quick Create option
+        quick_btn = tk.Button(options_frame, text="⚡ สร้างแบบเร็ว\n(เลือกเวอร์ชันได้)", 
+                             command=lambda: self.quick_create_release(dialog),
+                             font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
+                             fg='white', relief='flat', cursor='hand2', 
+                             width=25, height=3)
+        quick_btn.pack(pady=(0, 15))
+        
+        # Custom Create option
+        custom_btn = tk.Button(options_frame, text="🛠️ สร้างแบบกำหนดเอง\n(ปรับแต่งทุกอย่าง)", 
+                              command=lambda: self.show_release_dialog(dialog),
+                              font=('Segoe UI', 12, 'bold'), bg=self.colors['info'], 
+                              fg='white', relief='flat', cursor='hand2', 
+                              width=25, height=3)
+        custom_btn.pack(pady=(0, 15))
+        
+        # Cancel button
+        cancel_btn = tk.Button(options_frame, text="ยกเลิก", 
+                              command=dialog.destroy,
+                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=15)
+        cancel_btn.pack()
+    
+    def quick_create_release(self, parent_dialog):
+        """สร้าง release แบบเร็ว"""
+        parent_dialog.destroy()
+        self.show_quick_release_dialog()
+    
+    def show_quick_release_dialog(self):
+        """แสดงหน้าต่างสำหรับ quick release"""
+        dialog = tk.Toplevel(self.root)
+        dialog.title("สร้างแบบเร็ว")
+        dialog.geometry("480x400")
+        dialog.transient(self.root)
+        dialog.grab_set()
+        dialog.configure(bg=self.colors['surface'])
+        
+        # Center the dialog
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 70, self.root.winfo_rooty() + 70))
+        
+        # Get version info
+        latest_tag = self.get_latest_tag()
+        all_tags = self.get_all_tags()
+        suggested_version = self.increment_version(latest_tag)
+        
+        # Header
+        header_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        header_frame.pack(fill='x', padx=20, pady=20)
+        
+        tk.Label(header_frame, text="⚡ สร้าง Release แบบเร็ว", 
+                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack()
+        
+        tk.Label(header_frame, text=f"เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
+                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(5, 0))
+        
+        # Content
+        content_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        content_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        # Show existing tags
+        if all_tags:
+            tk.Label(content_frame, text="📋 เวอร์ชันที่มีอยู่:", 
+                    font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+            
+            tags_text = ", ".join(all_tags[:8])  # Show first 8 tags
+            if len(all_tags) > 8:
+                tags_text += f" ... (อีก {len(all_tags)-8} เวอร์ชัน)"
+            
+            tk.Label(content_frame, text=tags_text, 
+                    font=('Segoe UI', 9), fg=self.colors['text_muted'],
+                    bg=self.colors['surface'], wraplength=430, justify='left').pack(anchor='w', pady=(0, 15))
+        
+        # Version selection
+        tk.Label(content_frame, text="🏷️ เวอร์ชันใหม่:", 
+                font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+        
+        version_frame = tk.Frame(content_frame, bg=self.colors['surface'])
+        version_frame.pack(fill='x', pady=(0, 10))
+        
+        version_var = tk.StringVar(value=suggested_version)
+        version_entry = tk.Entry(version_frame, textvariable=version_var, 
+                                font=('Segoe UI', 12), bg=self.colors['bg'], 
+                                fg=self.colors['text'], insertbackground=self.colors['text'],
+                                relief='solid', bd=1, width=15)
+        version_entry.pack(side='left', padx=(0, 15))
+        
+        # Simplified version increment - only one button
+        def next_version():
+            current = version_var.get()
+            new_ver = self.increment_version_type(current, 'patch')
+            version_var.set(new_ver)
+        
+        next_btn = tk.Button(version_frame, text="เวอร์ชันถัดไป", command=next_version,
+                            font=('Segoe UI', 10), bg=self.colors['primary'], fg='white',
+                            relief='flat', cursor='hand2', width=12)
+        next_btn.pack(side='left')
+        
+        # Preview
+        tk.Label(content_frame, text="📝 รายละเอียด Release:", 
+                font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(15, 5))
+        
+        changelog = self.generate_changelog(latest_tag)
+        preview_text = tk.Text(content_frame, height=8, width=55,
+                              bg=self.colors['bg'], fg=self.colors['text_muted'],
+                              font=('Segoe UI', 9), relief='solid', bd=1,
+                              state='disabled')
+        preview_text.pack(anchor='w', pady=(0, 15))
+        
+        preview_text.config(state='normal')
+        preview_text.insert('1.0', changelog)
+        preview_text.config(state='disabled')
+        
+        # Buttons
+        btn_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        btn_frame.pack(fill='x', padx=20, pady=(0, 20))
+        
+        def create_quick_release():
+            new_version = version_var.get().strip()
+            if not new_version:
+                messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่เวอร์ชัน")
+                return
+            
+            if new_version in all_tags:
+                messagebox.showerror("ข้อผิดพลาด", f"เวอร์ชัน {new_version} มีอยู่แล้ว!")
+                return
+            
+            dialog.destroy()
+            self.do_quick_release(new_version, changelog)
+        
+        create_btn = tk.Button(btn_frame, text="🚀 สร้าง Release", 
+                              command=create_quick_release,
+                              font=('Segoe UI', 11, 'bold'), bg=self.colors['primary'], 
+                              fg='white', relief='flat', cursor='hand2', width=15, height=2)
+        create_btn.pack(side='left', padx=(0, 10))
+        
+        cancel_btn = tk.Button(btn_frame, text="ยกเลิก", command=dialog.destroy,
+                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=10)
+        cancel_btn.pack(side='left')
+    
+    def get_all_tags(self):
+        """ดึง tags ทั้งหมด"""
+        try:
+            result = subprocess.run('git tag --sort=-version:refname', shell=True, 
+                                  cwd=self.project_path.get(), capture_output=True, text=True)
+            if result.returncode == 0 and result.stdout.strip():
+                return result.stdout.strip().split('\n')
+        except:
+            pass
+        return []
+    
+    def increment_version_type(self, version, version_type):
+        """เพิ่มเวอร์ชันตามประเภท"""
+        if not version:
+            return "v1.0.0"
+        
+        clean_version = version.lstrip('v')
+        parts = clean_version.split('.')
+        
+        try:
+            if len(parts) >= 3:
+                major, minor, patch = int(parts[0]), int(parts[1]), int(parts[2])
+                
+                if version_type == 'major':
+                    return f"v{major + 1}.0.0"
+                elif version_type == 'minor':
+                    return f"v{major}.{minor + 1}.0"
+                elif version_type == 'patch':
+                    return f"v{major}.{minor}.{patch + 1}"
+        except:
+            pass
+        
+        return f"v{clean_version}.1"
+    
+    def do_quick_release(self, version, changelog):
+        """สร้าง quick release"""
+        def quick_release_thread():
+            try:
+                self.status_var.set("Creating quick release...")
+                self.log("⚡ Starting quick release creation...")
+                self.log(f"📋 Version: {version}")
+                
+                # Create release
+                success = self.create_release_sync(version, version, changelog)
+                
+                if success:
+                    self.log("🎉 Quick release created successfully!")
+                    self.status_var.set("Release created")
+                    messagebox.showinfo("Success", f"Release {version} created successfully!")
+                else:
+                    self.log("❌ Failed to create release")
+                    self.status_var.set("Release failed")
+                    
+            except Exception as e:
+                self.log(f"❌ Error: {e}")
+                self.status_var.set("Error")
+                messagebox.showerror("Error", f"Failed to create release: {e}")
+        
+        threading.Thread(target=quick_release_thread, daemon=True).start()
+        
+    def show_release_dialog(self, parent_dialog=None):
+        """หน้าต่างสร้าง release แบบ custom"""
+        if parent_dialog:
+            parent_dialog.destroy()
+            
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Custom Release")
+        dialog.geometry("550x450")
+        dialog.transient(self.root)
+        dialog.grab_set()
+        dialog.configure(bg=self.colors['surface'])
+        
+        # Center the dialog
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 30, self.root.winfo_rooty() + 30))
         
         # Get latest tag
         latest_tag = self.get_latest_tag()
         suggested_version = self.increment_version(latest_tag)
         
-        tk.Label(dialog, text="สร้าง GitHub Release", font=('Arial', 14, 'bold')).pack(pady=15)
-        tk.Label(dialog, text=f"Tag ล่าสุด: {latest_tag or 'ไม่มี'}").pack()
+        # Header
+        header_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        header_frame.pack(fill='x', padx=20, pady=20)
+        
+        tk.Label(header_frame, text="🛠️ Custom GitHub Release", 
+                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack()
+        
+        tk.Label(header_frame, text=f"Latest tag: {latest_tag or 'None'}", 
+                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(5, 0))
+        
+        # Content frame
+        content_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        content_frame.pack(fill='both', expand=True, padx=20, pady=10)
         
         # Version
-        tk.Label(dialog, text="เวอร์ชันใหม่:").pack(pady=(15,5))
+        tk.Label(content_frame, text="🏷️ Version:", font=('Segoe UI', 10, 'bold'),
+                fg=self.colors['text'], bg=self.colors['surface']).pack(anchor='w', pady=(0,5))
+        
         version_var = tk.StringVar(value=suggested_version)
-        tk.Entry(dialog, textvariable=version_var, width=30).pack()
+        version_entry = tk.Entry(content_frame, textvariable=version_var, 
+                                font=('Segoe UI', 10), bg=self.colors['bg'], 
+                                fg=self.colors['text'], insertbackground=self.colors['text'],
+                                relief='solid', bd=1, width=40)
+        version_entry.pack(anchor='w', pady=(0,15))
         
         # Name
-        tk.Label(dialog, text="ชื่อ Release:").pack(pady=(15,5))
+        tk.Label(content_frame, text="📝 Release Name:", font=('Segoe UI', 10, 'bold'),
+                fg=self.colors['text'], bg=self.colors['surface']).pack(anchor='w', pady=(0,5))
+        
         name_var = tk.StringVar(value=suggested_version)
-        tk.Entry(dialog, textvariable=name_var, width=30).pack()
+        name_entry = tk.Entry(content_frame, textvariable=name_var, 
+                             font=('Segoe UI', 10), bg=self.colors['bg'], 
+                             fg=self.colors['text'], insertbackground=self.colors['text'],
+                             relief='solid', bd=1, width=40)
+        name_entry.pack(anchor='w', pady=(0,15))
         
         # Description
-        tk.Label(dialog, text="คำอธิบาย:").pack(pady=(15,5))
-        desc_text = tk.Text(dialog, width=50, height=8)
-        desc_text.pack(pady=5)
+        tk.Label(content_frame, text="📋 Release Notes:", font=('Segoe UI', 10, 'bold'),
+                fg=self.colors['text'], bg=self.colors['surface']).pack(anchor='w', pady=(0,5))
+        
+        desc_text = tk.Text(content_frame, width=60, height=10, 
+                           bg=self.colors['bg'], fg=self.colors['text'], 
+                           font=('Segoe UI', 9), relief='solid', bd=1,
+                           insertbackground=self.colors['text'])
+        desc_text.pack(anchor='w', pady=(0,15))
         
         # Auto changelog
         changelog = self.generate_changelog(latest_tag)
         desc_text.insert('1.0', changelog)
         
         # Buttons
-        btn_frame = tk.Frame(dialog)
-        btn_frame.pack(pady=20)
+        btn_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        btn_frame.pack(fill='x', padx=20, pady=(0,20))
         
         def create_action():
             self.do_create_release(version_var.get(), name_var.get(), desc_text.get('1.0', 'end'))
             dialog.destroy()
             
-        tk.Button(btn_frame, text="สร้าง Release", command=create_action, 
-                 bg='#e74c3c', fg='white').pack(side='left', padx=10)
-        tk.Button(btn_frame, text="ยกเลิก", command=dialog.destroy, 
-                 bg='#95a5a6', fg='white').pack(side='left')
+        create_btn = tk.Button(btn_frame, text="🚀 Create Release", command=create_action, 
+                              font=('Segoe UI', 10, 'bold'), bg=self.colors['primary'], 
+                              fg='white', relief='flat', cursor='hand2', width=15)
+        create_btn.pack(side='left', padx=(0,10))
+        
+        cancel_btn = tk.Button(btn_frame, text="Cancel", command=dialog.destroy, 
+                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=10)
+        cancel_btn.pack(side='left')
                  
     def get_latest_tag(self):
         """ดึง tag ล่าสุด"""

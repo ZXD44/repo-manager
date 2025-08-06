@@ -4,14 +4,17 @@
 
 ## ✨ คุณสมบัติ
 
-- **🖥️ GUI ใช้งานง่าย**: Interface แบบกราฟิกที่เข้าใจง่าย
-- **📁 เลือกโฟลเดอร์**: เลือกโฟลเดอร์โปรเจคได้ง่าย ๆ
-- **📤 Push ไฟล์**: Commit และ push ไฟล์ไปยัง GitHub
-- **🎯 สร้าง Releases**: สร้าง GitHub releases พร้อม changelog อัตโนมัติ
-- **🚀 ทำทั้งหมด**: Push และสร้าง release ในคลิกเดียว
+- **� GitIHub Theme**: ธีมสีแบบ GitHub Dark Mode สวยงาม
+- **� Quืick Actions**: ปุ่มหลัก 4 ปุ่มใช้งานง่าย
+- **� Eassy Setup**: เลือกโฟลเดอร์และตั้งค่าได้ง่าย ๆ
+- **1️⃣ Create Repository**: สร้าง GitHub repository ใหม่
+- **2️⃣ Push Files**: Commit และ push ไฟล์อัตโนมัติ
+- **3️⃣ Create Release**: สร้าง releases พร้อมตรวจสอบเวอร์ชันซ้ำ
+- **4️⃣ Check Status**: ตรวจสอบการตั้งค่าและสถานะ
+- **📋 Additional Actions**: เมนูเพิ่มเติมใน dropdown
 - **🔄 Auto-increment**: เพิ่มเวอร์ชันอัตโนมัติ
-- **📝 Log แบบ Real-time**: ดูผลการทำงานแบบ real-time
-- **🇹🇭 รองรับภาษาไทย**: Interface เป็นภาษาไทยทั้งหมด
+- **📝 Activity Log**: ดูผลการทำงานแบบ real-time
+- **💡 Tooltips**: คำแนะนำเมื่อ hover ปุ่ม
 
 ## 📦 การติดตั้งและใช้งาน
 
@@ -47,40 +50,78 @@ python repo_manager.py
 2. เลือกโฟลเดอร์โปรเจค
 3. ใส่ GitHub Token
 4. ใส่ชื่อ Owner และ Repository
-5. คลิก "🚀 ทำทั้งหมด"
+5. ใช้ Quick Actions ตามลำดับ:
+   - **1️⃣ Create Repository** (ถ้ายังไม่มี repo)
+   - **2️⃣ Push Files** (อัปโหลดไฟล์)
+   - **3️⃣ Create Release** (สร้าง release)
+
+### 🎯 Create Release Options
+เมื่อกดปุ่ม **3️⃣ Create Release** จะมีตัวเลือก 2 แบบ:
+
+#### ⚡ Quick Create
+- **📋 แสดง existing tags** - ดู tags ที่มีอยู่แล้ว
+- **🏷️ เลือกเวอร์ชัน** - แก้ไขเอง หรือใช้ปุ่ม:
+  - **Major** (v1.0.0 → v2.0.0) - เปลี่ยนแปลงใหญ่
+  - **Minor** (v1.0.0 → v1.1.0) - ฟีเจอร์ใหม่
+  - **Patch** (v1.0.0 → v1.0.1) - แก้บัค
+- **✅ ตรวจสอบซ้ำ** - ป้องกันเวอร์ชันซ้ำ
+- **📝 Preview** - ดู release notes ก่อนสร้าง
+- **🚀 สร้างทันที** - กดปุ่มเดียวเสร็จ
+
+#### 🛠️ Custom Create  
+- เลือกเวอร์ชันเอง
+- เขียน release notes เอง
+- ปรับแต่งรายละเอียดได้
 
 ### ปุ่มต่าง ๆ ในโปรแกรม
 
+#### 🚀 Quick Actions (ปุ่มหลัก)
 | ปุ่ม | คำอธิบาย |
 |------|----------|
-| 📤 Push ไฟล์ | Commit และ push ไฟล์ไปยัง GitHub |
-| 🎯 สร้าง Release | สร้าง GitHub release ใหม่ |
-| 🚀 ทำทั้งหมด | Push ไฟล์และสร้าง release |
-| 🔄 รีเฟรช | โหลดข้อมูล repository ใหม่ |
-| 📋 ดู Releases | เปิดหน้า releases ใน browser |
-| ❌ ออก | ปิดโปรแกรม |
+| 1️⃣ Create Repository | สร้าง GitHub repository ใหม่ |
+| 2️⃣ Push Files | Commit และ push ไฟล์ไปยัง GitHub |
+| 3️⃣ Create Release | สร้าง GitHub release (Quick หรือ Custom) |
+| 4️⃣ Check Status | ตรวจสอบสถานะและการตั้งค่า |
+
+#### 📋 Other Actions (เมนูเพิ่มเติม)
+| ปุ่ม | คำอธิบาย |
+|------|----------|
+| 🔄 Refresh Info | โหลดข้อมูล repository ใหม่ |
+| 📋 View Releases | เปิดหน้า releases ใน browser |
+| 🔧 Fix Remote | แก้ไข remote URL |
+| 🚀 Do All | Push ไฟล์และสร้าง release |
+| 🌐 Open GitHub | เปิด repository ใน browser |
+
+#### ⚡ Quick Buttons
+| ปุ่ม | คำอธิบาย |
+|------|----------|
+| 🔄 | รีเฟรชข้อมูล |
+| 📋 | ดู releases |
+| ❌ | ออกจากโปรแกรม |
 
 ## 📸 หน้าตาโปรแกรม
 
 ```
-🚀 Repository & Release Manager
-========================================
+🐙 GitHub Repository Manager                    [Ready]
+═══════════════════════════════════════════════════════
 
-📁 การตั้งค่าโปรเจค
-📂 โฟลเดอร์โปรเจค: [C:\my-project] [เลือก]
-🔑 GitHub Token: [**********] [ช่วยเหลือ]
-👤 Owner/User: [username]
-📦 Repository: [repo-name]
+⚙️ Configuration
+📁 Project Folder: [C:\my-project] [Browse]
+🔑 GitHub Token: [**********] [Help]
+👤 Owner: [username]  📦 Repository: [repo-name]
 
-⚡ การดำเนินการ
-[📤 Push ไฟล์] [🎯 สร้าง Release] [🚀 ทำทั้งหมด]
-[🔄 รีเฟรช] [📋 ดู Releases] [❌ ออก]
+🚀 Quick Actions
+┌─────────────────┬─────────────────┬─────────────────┬─────────────────┐
+│ 1️⃣ Create Repo  │ 2️⃣ Push Files   │ 3️⃣ Create Release│ 4️⃣ Check Status │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────┘
 
-📝 Log การทำงาน
-[12:34:56] 🚀 Repository & Release Manager พร้อมใช้งาน
-[12:34:57] 📁 พบ repository: username/repo-name
-[12:35:00] 🔧 รันคำสั่ง: git add .
-[12:35:01] ✅ Push เสร็จสิ้น!
+Other Actions: [Select Action...] ▼     [🔄] [📋] [❌]
+
+📝 Activity Log                                    [Clear]
+[12:34:56] 🚀 GitHub Repository Manager ready
+[12:34:57] 📁 Found repository: username/repo-name
+[12:35:00] 🔧 Running command: git add .
+[12:35:01] ✅ Push completed successfully!
 ```
 
 ## 🔍 การแก้ไขปัญหา
