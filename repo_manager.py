@@ -1200,7 +1200,7 @@ class RepoManagerGUI:
         btn_container.pack(expand=True)
         
         # Main OK button (most prominent)
-        ok_btn = tk.Button(btn_container, text="✅ ตกลง - สร้าง Release", 
+        ok_btn = tk.Button(btn_container, text="✅ ตกลง", 
                           command=create_final_release,
                           font=('Segoe UI', 14, 'bold'), bg=self.colors['primary'], 
                           fg='white', relief='flat', cursor='hand2', width=22, height=3)
