@@ -747,7 +747,7 @@ class RepoManagerGUI:
         btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
         btn_container.pack(expand=True)
         
-        ok_btn = tk.Button(btn_container, text="✅ ตกลง - สร้าง Release", 
+        ok_btn = tk.Button(btn_container, text="✅ ตกลง", 
                           command=create_quick_release,
                           font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
                           fg='white', relief='flat', cursor='hand2', width=20, height=2)
