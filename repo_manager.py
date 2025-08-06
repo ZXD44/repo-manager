@@ -997,16 +997,27 @@ class RepoManagerGUI:
         threading.Thread(target=release_thread, daemon=True).start()
         
     def do_all(self):
-        """ทำทั้งหมด"""
-        def all_thread():
+        """ทำทั้งหมด - ทีละขั้นตอน"""
+        # ตรวจสอบข้อมูลพื้นฐานก่อน
+        if not self.repo_owner.get() or not self.repo_name.get():
+            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ชื่อเจ้าของและ Repository")
+            return
+        
+        if not self.github_token.get():
+            messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ GitHub Token")
+            return
+        
+        self.log("🚀 เริ่มทำงานทั้งหมด - ทีละขั้นตอน")
+        
+        # ขั้นตอนที่ 1: Push ไฟล์
+        self.do_push_step()
+    
+    def do_push_step(self):
+        """ขั้นตอนที่ 1: Push ไฟล์"""
+        def push_thread():
             try:
-                self.log("🚀 เริ่มทำงานทั้งหมด")
-                
-                # ตรวจสอบข้อมูลพื้นฐาน
-                if not self.repo_owner.get() or not self.repo_name.get():
-                    self.log("❌ กรุณาใส่ชื่อ Owner และ Repository")
-                    messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่ชื่อ Owner และ Repository")
-                    return
+                self.status_var.set("ขั้นตอน 1/2: กำลัง push ไฟล์...")
+                self.log("📤 ขั้นตอนที่ 1: เริ่ม push ไฟล์")
                 
                 project_dir = self.project_path.get()
                 os.chdir(project_dir)
@@ -1019,9 +1030,6 @@ class RepoManagerGUI:
                     self.log("❌ ไม่สามารถดำเนินการต่อได้")
                     self.status_var.set("ล้มเหลว")
                     return
-                
-                # Push first
-                self.status_var.set("กำลัง push...")
                 
                 if not os.path.exists('.git'):
                     self.run_command('git init')
@@ -1050,31 +1058,187 @@ class RepoManagerGUI:
                 push_result = self.run_command(f'git push -u origin {current_branch}', check_error=False)
                 
                 if push_result and push_result.returncode == 0:
-                    self.log("✅ Push เสร็จสิ้น!")
+                    self.log("✅ ขั้นตอนที่ 1 เสร็จสิ้น: Push ไฟล์สำเร็จ!")
+                    self.status_var.set("ขั้นตอน 1/2 เสร็จสิ้น")
                     
-                    # Create release
-                    if self.github_token.get():
-                        self.log("🎯 เริ่มสร้าง release...")
-                        latest_tag = self.get_latest_tag()
-                        new_version = self.increment_version(latest_tag)
-                        changelog = self.generate_changelog(latest_tag)
-                        
-                        # สร้าง release ในเธรดเดียวกัน
-                        self.create_release_sync(new_version, new_version, changelog)
-                    else:
-                        self.log("⚠️ ข้าม release เนื่องจากไม่มี token")
-                        
-                    self.log("🎉 เสร็จสิ้นทั้งหมด!")
-                    self.status_var.set("เสร็จสิ้นทั้งหมด")
+                    # ไปขั้นตอนที่ 2: สร้าง release
+                    self.root.after(1000, self.do_release_step)  # รอ 1 วินาทีแล้วไปขั้นตอนต่อไป
                 else:
-                    self.log("❌ Push ล้มเหลว")
+                    self.log("❌ ขั้นตอนที่ 1 ล้มเหลว: Push ไฟล์ไม่สำเร็จ")
                     self.status_var.set("Push ล้มเหลว")
                 
             except Exception as e:
-                self.log(f"❌ ข้อผิดพลาด: {e}")
+                self.log(f"❌ ข้อผิดพลาดในขั้นตอนที่ 1: {e}")
                 self.status_var.set("เกิดข้อผิดพลาด")
                 
-        threading.Thread(target=all_thread, daemon=True).start()
+        threading.Thread(target=push_thread, daemon=True).start()
+    
+    def do_release_step(self):
+        """ขั้นตอนที่ 2: สร้าง Release"""
+        self.log("🎯 ขั้นตอนที่ 2: เริ่มสร้าง Release")
+        self.status_var.set("ขั้นตอน 2/2: กำลังสร้าง Release...")
+        
+        # เปิด popup เลือกเวอร์ชัน
+        self.show_quick_release_dialog_for_do_all()
+    
+    def show_quick_release_dialog_for_do_all(self):
+        """แสดงหน้าต่างเลือกเวอร์ชันสำหรับ ทำทั้งหมด"""
+        dialog = tk.Toplevel(self.root)
+        dialog.title("ขั้นตอนที่ 2: สร้าง Release")
+        dialog.geometry("550x400")
+        dialog.transient(self.root)
+        dialog.grab_set()
+        dialog.configure(bg=self.colors['surface'])
+        
+        # Center the dialog
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 100, self.root.winfo_rooty() + 100))
+        
+        # Get version info
+        latest_tag = self.get_latest_tag()
+        all_tags = self.get_all_tags()
+        suggested_version = self.increment_version(latest_tag)
+        
+        # Header
+        header_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        header_frame.pack(fill='x', padx=20, pady=20)
+        
+        tk.Label(header_frame, text="🎯 ขั้นตอนที่ 2: สร้าง Release", 
+                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack()
+        
+        tk.Label(header_frame, text=f"✅ Push ไฟล์เสร็จแล้ว | เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
+                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(5, 0))
+        
+        # Content
+        content_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        content_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        # Show existing tags
+        if all_tags:
+            tk.Label(content_frame, text="📋 เวอร์ชันที่มีอยู่:", 
+                    font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+            
+            tags_text = ", ".join(all_tags[:6])  # Show first 6 tags
+            if len(all_tags) > 6:
+                tags_text += f" ... (อีก {len(all_tags)-6} เวอร์ชัน)"
+            
+            tk.Label(content_frame, text=tags_text, 
+                    font=('Segoe UI', 9), fg=self.colors['text_muted'],
+                    bg=self.colors['surface'], wraplength=500, justify='left').pack(anchor='w', pady=(0, 15))
+        
+        # Version selection
+        tk.Label(content_frame, text="🏷️ เลือกเวอร์ชันใหม่:", 
+                font=('Segoe UI', 11, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+        
+        version_frame = tk.Frame(content_frame, bg=self.colors['surface'])
+        version_frame.pack(fill='x', pady=(0, 15))
+        
+        version_var = tk.StringVar(value=suggested_version)
+        version_entry = tk.Entry(version_frame, textvariable=version_var, 
+                                font=('Segoe UI', 12), bg=self.colors['bg'], 
+                                fg=self.colors['text'], insertbackground=self.colors['text'],
+                                relief='solid', bd=1, width=15)
+        version_entry.pack(side='left', padx=(0, 15))
+        
+        # Next version button
+        def next_version():
+            current = version_var.get()
+            new_ver = self.increment_version_type(current, 'patch')
+            version_var.set(new_ver)
+        
+        next_btn = tk.Button(version_frame, text="เวอร์ชันถัดไป", command=next_version,
+                            font=('Segoe UI', 10), bg=self.colors['primary'], fg='white',
+                            relief='flat', cursor='hand2', width=12)
+        next_btn.pack(side='left')
+        
+        # Release notes
+        tk.Label(content_frame, text="📝 รายละเอียด Release:", 
+                font=('Segoe UI', 11, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(15, 5))
+        
+        changelog = self.generate_changelog(latest_tag)
+        notes_text = tk.Text(content_frame, height=8, width=60,
+                            bg=self.colors['bg'], fg=self.colors['text'],
+                            font=('Segoe UI', 9), relief='solid', bd=1,
+                            insertbackground=self.colors['text'], wrap='word')
+        notes_text.pack(anchor='w', pady=(0, 15), fill='both', expand=True)
+        
+        notes_text.insert('1.0', changelog)
+        
+        # Buttons
+        btn_frame = tk.Frame(dialog, bg=self.colors['surface'])
+        btn_frame.pack(fill='x', padx=20, pady=(0, 20))
+        
+        def create_final_release():
+            new_version = version_var.get().strip()
+            if not new_version:
+                messagebox.showerror("ข้อผิดพลาด", "กรุณาใส่เวอร์ชัน")
+                return
+            
+            if new_version in all_tags:
+                messagebox.showerror("ข้อผิดพลาด", f"เวอร์ชัน {new_version} มีอยู่แล้ว!")
+                return
+            
+            # Get edited release notes
+            release_notes = notes_text.get('1.0', 'end-1c').strip()
+            if not release_notes:
+                release_notes = f"Release {new_version}"
+            
+            dialog.destroy()
+            self.do_final_release(new_version, release_notes)
+        
+        def skip_release():
+            dialog.destroy()
+            self.log("⚠️ ข้าม release - เสร็จสิ้นเฉพาะ Push ไฟล์")
+            self.status_var.set("เสร็จสิ้น (ข้าม Release)")
+        
+        # Center the buttons
+        btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
+        btn_container.pack(expand=True)
+        
+        create_btn = tk.Button(btn_container, text="🚀 สร้าง Release", 
+                              command=create_final_release,
+                              font=('Segoe UI', 11, 'bold'), bg=self.colors['primary'], 
+                              fg='white', relief='flat', cursor='hand2', width=15, height=2)
+        create_btn.pack(side='left', padx=(0, 10))
+        
+        skip_btn = tk.Button(btn_container, text="⏭️ ข้าม Release", command=skip_release,
+                            font=('Segoe UI', 10), bg=self.colors['warning'], 
+                            fg='white', relief='flat', cursor='hand2', width=12, height=2)
+        skip_btn.pack(side='left', padx=(0, 10))
+        
+        cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
+                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=10, height=2)
+        cancel_btn.pack(side='left')
+    
+    def do_final_release(self, version, release_notes):
+        """สร้าง release ขั้นตอนสุดท้าย"""
+        def final_release_thread():
+            try:
+                self.status_var.set("กำลังสร้าง Release...")
+                self.log(f"🎯 สร้าง release {version}")
+                
+                # Create release
+                success = self.create_release_sync(version, version, release_notes)
+                
+                if success:
+                    self.log("🎉 ขั้นตอนที่ 2 เสร็จสิ้น: สร้าง Release สำเร็จ!")
+                    self.log("✨ เสร็จสิ้นทั้งหมด! Push ไฟล์และสร้าง Release สำเร็จ!")
+                    self.status_var.set("เสร็จสิ้นทั้งหมด")
+                    messagebox.showinfo("สำเร็จ", f"เสร็จสิ้นทั้งหมด!\n✅ Push ไฟล์สำเร็จ\n✅ สร้าง Release {version} สำเร็จ")
+                else:
+                    self.log("❌ ขั้นตอนที่ 2 ล้มเหลว: สร้าง Release ไม่สำเร็จ")
+                    self.status_var.set("สร้าง Release ล้มเหลว")
+                    
+            except Exception as e:
+                self.log(f"❌ ข้อผิดพลาดในขั้นตอนที่ 2: {e}")
+                self.status_var.set("เกิดข้อผิดพลาด")
+        
+        threading.Thread(target=final_release_thread, daemon=True).start()
 
     def create_release_sync(self, version, name, description):
         """สร้าง release แบบ sync"""
