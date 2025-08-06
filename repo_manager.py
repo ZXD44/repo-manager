@@ -747,16 +747,20 @@ class RepoManagerGUI:
         btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
         btn_container.pack(expand=True)
         
-        create_btn = tk.Button(btn_container, text="🚀 สร้าง Release", 
-                              command=create_quick_release,
-                              font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
-                              fg='white', relief='flat', cursor='hand2', width=18, height=2)
-        create_btn.pack(side='left', padx=(0, 15))
+        ok_btn = tk.Button(btn_container, text="✅ ตกลง - สร้าง Release", 
+                          command=create_quick_release,
+                          font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
+                          fg='white', relief='flat', cursor='hand2', width=20, height=2)
+        ok_btn.pack(side='left', padx=(0, 15))
         
         cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
                               font=('Segoe UI', 11), bg=self.colors['secondary'], 
                               fg='white', relief='flat', cursor='hand2', width=12, height=2)
         cancel_btn.pack(side='left')
+        
+        # Make OK button the default (Enter key)
+        ok_btn.focus_set()
+        dialog.bind('<Return>', lambda e: create_quick_release())
     
     def get_all_tags(self):
         """ดึง tags ทั้งหมด"""
@@ -1199,21 +1203,27 @@ class RepoManagerGUI:
         btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
         btn_container.pack(expand=True)
         
-        create_btn = tk.Button(btn_container, text="🚀 สร้าง Release", 
-                              command=create_final_release,
-                              font=('Segoe UI', 11, 'bold'), bg=self.colors['primary'], 
-                              fg='white', relief='flat', cursor='hand2', width=15, height=2)
-        create_btn.pack(side='left', padx=(0, 10))
+        # Main OK button (most prominent)
+        ok_btn = tk.Button(btn_container, text="✅ ตกลง - สร้าง Release", 
+                          command=create_final_release,
+                          font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
+                          fg='white', relief='flat', cursor='hand2', width=20, height=2)
+        ok_btn.pack(side='left', padx=(0, 15))
         
-        skip_btn = tk.Button(btn_container, text="⏭️ ข้าม Release", command=skip_release,
+        # Secondary buttons
+        skip_btn = tk.Button(btn_container, text="⏭️ ข้าม", command=skip_release,
                             font=('Segoe UI', 10), bg=self.colors['warning'], 
-                            fg='white', relief='flat', cursor='hand2', width=12, height=2)
+                            fg='white', relief='flat', cursor='hand2', width=8, height=2)
         skip_btn.pack(side='left', padx=(0, 10))
         
         cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
                               font=('Segoe UI', 10), bg=self.colors['secondary'], 
-                              fg='white', relief='flat', cursor='hand2', width=10, height=2)
+                              fg='white', relief='flat', cursor='hand2', width=8, height=2)
         cancel_btn.pack(side='left')
+        
+        # Make OK button the default (Enter key)
+        ok_btn.focus_set()
+        dialog.bind('<Return>', lambda e: create_final_release())
     
     def do_final_release(self, version, release_notes):
         """สร้าง release ขั้นตอนสุดท้าย"""
