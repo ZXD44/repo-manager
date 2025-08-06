@@ -750,7 +750,7 @@ class RepoManagerGUI:
         ok_btn = tk.Button(btn_container, text="✅ ตกลง", 
                           command=create_quick_release,
                           font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
-                          fg='white', relief='flat', cursor='hand2', width=20, height=2)
+                          fg='white', relief='flat', cursor='hand2', width=12, height=2)
         ok_btn.pack(side='left', padx=(0, 15))
         
         cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
@@ -1202,8 +1202,8 @@ class RepoManagerGUI:
         # Main OK button (most prominent)
         ok_btn = tk.Button(btn_container, text="✅ ตกลง", 
                           command=create_final_release,
-                          font=('Segoe UI', 14, 'bold'), bg=self.colors['primary'], 
-                          fg='white', relief='flat', cursor='hand2', width=22, height=3)
+                          font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
+                          fg='white', relief='flat', cursor='hand2', width=12, height=3)
         ok_btn.pack(side='left', padx=(0, 20))
         
         # Cancel button
