@@ -633,53 +633,53 @@ class RepoManagerGUI:
         """แสดงหน้าต่างสำหรับ quick release"""
         dialog = tk.Toplevel(self.root)
         dialog.title("สร้าง Release")
-        dialog.geometry("650x550")
+        dialog.geometry("580x480")  # ลดขนาดลง
         dialog.transient(self.root)
         dialog.grab_set()
         dialog.configure(bg=self.colors['surface'])
         
-        # Center the dialog
-        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 70, self.root.winfo_rooty() + 70))
+        # ย้ายไปข้างบนและกึ่งกลาง
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 20))
         
         # Get version info
         latest_tag = self.get_latest_tag()
         all_tags = self.get_all_tags()
         suggested_version = self.increment_version(latest_tag)
         
-        # Header
+        # Header - ปรับให้กะทัดรัดขึ้น
         header_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        header_frame.pack(fill='x', padx=20, pady=20)
+        header_frame.pack(fill='x', padx=15, pady=15)
         
         tk.Label(header_frame, text="🎯 สร้าง GitHub Release", 
-                font=('Segoe UI', 18, 'bold'), fg=self.colors['text'],
+                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
                 bg=self.colors['surface']).pack()
         
         tk.Label(header_frame, text=f"เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
-                font=('Segoe UI', 11), fg=self.colors['text_muted'],
-                bg=self.colors['surface']).pack(pady=(5, 0))
+                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(3, 0))
         
-        # Credit
-        tk.Label(header_frame, text="👨‍💻 สร้างโดย ZirconX", 
-                font=('Segoe UI', 9), fg=self.colors['text_muted'],
-                bg=self.colors['surface']).pack(pady=(2, 0))
+        # Credit - ย้ายไปด้านล่าง
+        tk.Label(header_frame, text="👨‍💻 ZirconX", 
+                font=('Segoe UI', 8), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(1, 0))
         
-        # Content
+        # Content - ปรับ padding ให้เหมาะสม
         content_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        content_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        content_frame.pack(fill='both', expand=True, padx=15, pady=8)
         
-        # Show existing tags
+        # Show existing tags - ปรับให้กะทัดรัด
         if all_tags:
-            tk.Label(content_frame, text="📋 เวอร์ชันที่มีอยู่:", 
-                    font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
-                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
+            tk.Label(content_frame, text="📋 เวอร์ชันที่มี:", 
+                    font=('Segoe UI', 9, 'bold'), fg=self.colors['text'],
+                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 3))
             
-            tags_text = ", ".join(all_tags[:8])  # Show first 8 tags
-            if len(all_tags) > 8:
-                tags_text += f" ... (อีก {len(all_tags)-8} เวอร์ชัน)"
+            tags_text = ", ".join(all_tags[:6])  # Show first 6 tags
+            if len(all_tags) > 6:
+                tags_text += f" ... (อีก {len(all_tags)-6} เวอร์ชัน)"
             
             tk.Label(content_frame, text=tags_text, 
-                    font=('Segoe UI', 9), fg=self.colors['text_muted'],
-                    bg=self.colors['surface'], wraplength=430, justify='left').pack(anchor='w', pady=(0, 15))
+                    font=('Segoe UI', 8), fg=self.colors['text_muted'],
+                    bg=self.colors['surface'], wraplength=380, justify='left').pack(anchor='w', pady=(0, 10))
         
         # Version selection
         tk.Label(content_frame, text="🏷️ เวอร์ชันใหม่:", 
@@ -707,23 +707,23 @@ class RepoManagerGUI:
                             relief='flat', cursor='hand2', width=12)
         next_btn.pack(side='left')
         
-        # Release Notes - Editable
-        tk.Label(content_frame, text="📝 รายละเอียด Release (แก้ไขได้):", 
-                font=('Segoe UI', 11, 'bold'), fg=self.colors['text'],
-                bg=self.colors['surface']).pack(anchor='w', pady=(15, 5))
+        # Release Notes - Editable - ปรับให้กะทัดรัด
+        tk.Label(content_frame, text="📝 รายละเอียด Release:", 
+                font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(12, 4))
         
         changelog = self.generate_changelog(latest_tag)
-        notes_text = tk.Text(content_frame, height=12, width=70,
+        notes_text = tk.Text(content_frame, height=10, width=65,
                             bg=self.colors['bg'], fg=self.colors['text'],
-                            font=('Segoe UI', 10), relief='solid', bd=1,
+                            font=('Segoe UI', 9), relief='solid', bd=1,
                             insertbackground=self.colors['text'], wrap='word')
-        notes_text.pack(anchor='w', pady=(0, 15), fill='both', expand=True)
+        notes_text.pack(anchor='w', pady=(0, 12), fill='both', expand=True)
         
         notes_text.insert('1.0', changelog)
         
-        # Buttons
+        # Buttons - ปรับ padding
         btn_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        btn_frame.pack(fill='x', padx=20, pady=(0, 20))
+        btn_frame.pack(fill='x', padx=15, pady=(0, 15))
         
         def create_quick_release():
             new_version = version_var.get().strip()
@@ -747,15 +747,15 @@ class RepoManagerGUI:
         btn_container = tk.Frame(btn_frame, bg=self.colors['surface'])
         btn_container.pack(expand=True)
         
-        ok_btn = tk.Button(btn_container, text="✅ ตกลง", 
+        ok_btn = tk.Button(btn_container, text="✅ สร้าง Release", 
                           command=create_quick_release,
-                          font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
-                          fg='white', relief='flat', cursor='hand2', width=12, height=2)
-        ok_btn.pack(side='left', padx=(0, 15))
+                          font=('Segoe UI', 11, 'bold'), bg=self.colors['primary'], 
+                          fg='white', relief='flat', cursor='hand2', width=14, height=2)
+        ok_btn.pack(side='left', padx=(0, 12))
         
         cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
-                              font=('Segoe UI', 11), bg=self.colors['secondary'], 
-                              fg='white', relief='flat', cursor='hand2', width=12, height=2)
+                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=10, height=2)
         cancel_btn.pack(side='left')
         
         # Make OK button the default (Enter key)
@@ -829,13 +829,13 @@ class RepoManagerGUI:
             
         dialog = tk.Toplevel(self.root)
         dialog.title("Custom Release")
-        dialog.geometry("550x450")
+        dialog.geometry("520x420")  # ลดขนาดลง
         dialog.transient(self.root)
         dialog.grab_set()
         dialog.configure(bg=self.colors['surface'])
         
-        # Center the dialog
-        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 30, self.root.winfo_rooty() + 30))
+        # ย้ายไปข้างบนและกึ่งกลาง
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 60, self.root.winfo_rooty() + 25))
         
         # Get latest tag
         latest_tag = self.get_latest_tag()
@@ -1089,7 +1089,7 @@ class RepoManagerGUI:
         """แสดงหน้าต่างเลือกเวอร์ชันสำหรับ ทำทั้งหมด"""
         dialog = tk.Toplevel(self.root)
         dialog.title("ขั้นตอนที่ 2: สร้าง Release")
-        dialog.geometry("700x600")
+        dialog.geometry("600x500")  # ลดขนาดลง
         dialog.transient(self.root)
         dialog.grab_set()
         dialog.configure(bg=self.colors['surface'])
