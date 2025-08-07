@@ -1094,58 +1094,58 @@ class RepoManagerGUI:
         dialog.grab_set()
         dialog.configure(bg=self.colors['surface'])
         
-        # Center the dialog
-        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
+        # ย้ายไปข้างบนและกึ่งกลาง
+        dialog.geometry("+%d+%d" % (self.root.winfo_rootx() + 60, self.root.winfo_rooty() + 25))
         
         # Get version info
         latest_tag = self.get_latest_tag()
         all_tags = self.get_all_tags()
         suggested_version = self.increment_version(latest_tag)
         
-        # Header
+        # Header - ปรับให้กะทัดรัดขึ้น
         header_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        header_frame.pack(fill='x', padx=20, pady=20)
+        header_frame.pack(fill='x', padx=15, pady=15)
         
         tk.Label(header_frame, text="🎯 ขั้นตอนที่ 2: สร้าง Release", 
-                font=('Segoe UI', 18, 'bold'), fg=self.colors['text'],
+                font=('Segoe UI', 16, 'bold'), fg=self.colors['text'],
                 bg=self.colors['surface']).pack()
         
-        tk.Label(header_frame, text=f"✅ Push ไฟล์เสร็จแล้ว | เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
-                font=('Segoe UI', 12), fg=self.colors['text_muted'],
-                bg=self.colors['surface']).pack(pady=(8, 0))
+        tk.Label(header_frame, text=f"✅ Push เสร็จแล้ว | เวอร์ชันล่าสุด: {latest_tag or 'ไม่มี'}", 
+                font=('Segoe UI', 10), fg=self.colors['text_muted'],
+                bg=self.colors['surface']).pack(pady=(5, 0))
         
-        # Content
+        # Content - ปรับ padding ให้เหมาะสม
         content_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        content_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        content_frame.pack(fill='both', expand=True, padx=15, pady=8)
         
-        # Show existing tags
+        # Show existing tags - ปรับให้กะทัดรัด
         if all_tags:
-            tk.Label(content_frame, text="📋 เวอร์ชันที่มีอยู่:", 
-                    font=('Segoe UI', 12, 'bold'), fg=self.colors['text'],
-                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 8))
+            tk.Label(content_frame, text="📋 เวอร์ชันที่มี:", 
+                    font=('Segoe UI', 9, 'bold'), fg=self.colors['text'],
+                    bg=self.colors['surface']).pack(anchor='w', pady=(0, 3))
             
-            tags_text = ", ".join(all_tags[:8])  # Show first 8 tags
-            if len(all_tags) > 8:
-                tags_text += f" ... (อีก {len(all_tags)-8} เวอร์ชัน)"
+            tags_text = ", ".join(all_tags[:6])  # Show first 6 tags
+            if len(all_tags) > 6:
+                tags_text += f" ... (อีก {len(all_tags)-6} เวอร์ชัน)"
             
             tk.Label(content_frame, text=tags_text, 
-                    font=('Segoe UI', 11), fg=self.colors['text_muted'],
-                    bg=self.colors['surface'], wraplength=650, justify='left').pack(anchor='w', pady=(0, 20))
+                    font=('Segoe UI', 8), fg=self.colors['text_muted'],
+                    bg=self.colors['surface'], wraplength=520, justify='left').pack(anchor='w', pady=(0, 12))
         
-        # Version selection
-        tk.Label(content_frame, text="🏷️ เลือกเวอร์ชันใหม่:", 
-                font=('Segoe UI', 13, 'bold'), fg=self.colors['text'],
-                bg=self.colors['surface']).pack(anchor='w', pady=(0, 8))
+        # Version selection - ปรับให้กะทัดรัด
+        tk.Label(content_frame, text="🏷️ เวอร์ชันใหม่:", 
+                font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(0, 5))
         
         version_frame = tk.Frame(content_frame, bg=self.colors['surface'])
-        version_frame.pack(fill='x', pady=(0, 20))
+        version_frame.pack(fill='x', pady=(0, 12))
         
         version_var = tk.StringVar(value=suggested_version)
         version_entry = tk.Entry(version_frame, textvariable=version_var, 
-                                font=('Segoe UI', 14), bg=self.colors['bg'], 
+                                font=('Segoe UI', 12), bg=self.colors['bg'], 
                                 fg=self.colors['text'], insertbackground=self.colors['text'],
-                                relief='solid', bd=1, width=18)
-        version_entry.pack(side='left', padx=(0, 20))
+                                relief='solid', bd=1, width=15)
+        version_entry.pack(side='left', padx=(0, 15))
         
         # Next version button
         def next_version():
@@ -1154,27 +1154,27 @@ class RepoManagerGUI:
             version_var.set(new_ver)
         
         next_btn = tk.Button(version_frame, text="เวอร์ชันถัดไป", command=next_version,
-                            font=('Segoe UI', 11), bg=self.colors['primary'], fg='white',
-                            relief='flat', cursor='hand2', width=14, height=2)
+                            font=('Segoe UI', 10), bg=self.colors['primary'], fg='white',
+                            relief='flat', cursor='hand2', width=12)
         next_btn.pack(side='left')
         
-        # Release notes
-        tk.Label(content_frame, text="📝 รายละเอียด Release (แก้ไขได้):", 
-                font=('Segoe UI', 13, 'bold'), fg=self.colors['text'],
-                bg=self.colors['surface']).pack(anchor='w', pady=(0, 8))
+        # Release notes - ปรับให้กะทัดรัด
+        tk.Label(content_frame, text="📝 รายละเอียด Release:", 
+                font=('Segoe UI', 10, 'bold'), fg=self.colors['text'],
+                bg=self.colors['surface']).pack(anchor='w', pady=(0, 4))
         
         changelog = self.generate_changelog(latest_tag)
-        notes_text = tk.Text(content_frame, height=12, width=80,
+        notes_text = tk.Text(content_frame, height=10, width=70,
                             bg=self.colors['bg'], fg=self.colors['text'],
-                            font=('Segoe UI', 11), relief='solid', bd=1,
+                            font=('Segoe UI', 9), relief='solid', bd=1,
                             insertbackground=self.colors['text'], wrap='word')
-        notes_text.pack(anchor='w', pady=(0, 20), fill='both', expand=True)
+        notes_text.pack(anchor='w', pady=(0, 12), fill='both', expand=True)
         
         notes_text.insert('1.0', changelog)
         
-        # Buttons
+        # Buttons - ปรับ padding
         btn_frame = tk.Frame(dialog, bg=self.colors['surface'])
-        btn_frame.pack(fill='x', padx=20, pady=(0, 20))
+        btn_frame.pack(fill='x', padx=15, pady=(0, 15))
         
         def create_final_release():
             new_version = version_var.get().strip()
@@ -1200,16 +1200,16 @@ class RepoManagerGUI:
         btn_container.pack(expand=True)
         
         # Main OK button (most prominent)
-        ok_btn = tk.Button(btn_container, text="✅ ตกลง", 
+        ok_btn = tk.Button(btn_container, text="✅ สร้าง Release", 
                           command=create_final_release,
-                          font=('Segoe UI', 12, 'bold'), bg=self.colors['primary'], 
-                          fg='white', relief='flat', cursor='hand2', width=12, height=3)
-        ok_btn.pack(side='left', padx=(0, 20))
+                          font=('Segoe UI', 11, 'bold'), bg=self.colors['primary'], 
+                          fg='white', relief='flat', cursor='hand2', width=14, height=2)
+        ok_btn.pack(side='left', padx=(0, 12))
         
         # Cancel button
         cancel_btn = tk.Button(btn_container, text="❌ ยกเลิก", command=dialog.destroy,
-                              font=('Segoe UI', 12), bg=self.colors['secondary'], 
-                              fg='white', relief='flat', cursor='hand2', width=12, height=3)
+                              font=('Segoe UI', 10), bg=self.colors['secondary'], 
+                              fg='white', relief='flat', cursor='hand2', width=10, height=2)
         cancel_btn.pack(side='left')
         
         # Make OK button the default (Enter key)
