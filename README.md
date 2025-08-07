@@ -211,8 +211,8 @@ SOFTWARE.
 - 🔧 **Contribute** ยินดีรับ Pull Requests
 
 #### 📞 ติดต่อ
-- 📧 **Email:** [[ติดต่อผ่าน GitHub Issues](https://github.com/ZXD44)]
-- 🐙 **GitHub:** [@ZirconX](www.zirconx.my)
+- 📧 **Email:** [[hdxwxd@gmail.com]
+- 🐙 **GitHub:** [[@ZirconX]((https://github.com/ZXD44)]
 - 💬 **Discussions:** ใช้ GitHub Discussions สำหรับคำถาม
 
 ---
