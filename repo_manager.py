@@ -953,24 +953,37 @@ class RepoManagerGUI:
         
     def generate_changelog(self, latest_tag):
         """สร้าง changelog"""
-        if not latest_tag:
-            return "บันทึกการเปลี่ยนแปลง"
-            
         try:
-            result = subprocess.run(f'git log {latest_tag}..HEAD --oneline', shell=True, 
-                                  cwd=self.project_path.get(), capture_output=True, text=True)
-            if result.returncode == 0 and result.stdout.strip():
-                changelog = "## 📋 การเปลี่ยนแปลงในเวอร์ชันนี้\n\n"
-                for commit in result.stdout.strip().split('\n'):
-                    if commit.strip():
-                        # แปลคำสำคัญใน commit message
-                        translated_commit = self.translate_commit_message(commit.strip())
-                        changelog += f"- {translated_commit}\n"
-                return changelog
-        except:
+            # ถ้าไม่มี latest_tag ให้แสดง commits ล่าสุด 10 รายการ
+            if not latest_tag:
+                result = subprocess.run('git log --oneline -10', shell=True, 
+                                      cwd=self.project_path.get(), capture_output=True, text=True)
+                if result.returncode == 0 and result.stdout.strip():
+                    changelog = "## 📋 การเปลี่ยนแปลงล่าสุด (10 commits)\n\n"
+                    for commit in result.stdout.strip().split('\n'):
+                        if commit.strip():
+                            # แปลคำสำคัญใน commit message
+                            translated_commit = self.translate_commit_message(commit.strip())
+                            changelog += f"- {translated_commit}\n"
+                    return changelog
+            else:
+                # ถ้ามี latest_tag ให้เปรียบเทียบกับ HEAD
+                result = subprocess.run(f'git log {latest_tag}..HEAD --oneline', shell=True, 
+                                      cwd=self.project_path.get(), capture_output=True, text=True)
+                if result.returncode == 0 and result.stdout.strip():
+                    changelog = "## 📋 การเปลี่ยนแปลงในเวอร์ชันนี้\n\n"
+                    for commit in result.stdout.strip().split('\n'):
+                        if commit.strip():
+                            # แปลคำสำคัญใน commit message
+                            translated_commit = self.translate_commit_message(commit.strip())
+                            changelog += f"- {translated_commit}\n"
+                    return changelog
+        except Exception as e:
+            # ถ้า git ไม่ทำงาน ให้ log error
+            self.log(f"❌ Error generating changelog: {str(e)}")
             pass
             
-        return "บันทึกการเปลี่ยนแปลง"
+        return "## 📋 บันทึกการเปลี่ยนแปลง\n\nไม่สามารถสร้าง changelog อัตโนมัติได้\nกรุณาเขียน release notes ด้วยตัวเอง"
     
     def translate_commit_message(self, commit):
         """แปลคำสำคัญใน commit message เป็นภาษาไทย"""
