@@ -422,8 +422,12 @@ class RepoManagerGUI:
 1. ไปที่ GitHub.com → Settings → Developer settings
 2. Personal access tokens → Tokens (classic)
 3. Generate new token (classic)
-4. เลือก scopes: repo, workflow
-5. Copy token มาใส่ในช่อง"""
+4. ตั้งชื่อ: "Repo Manager Token"
+5. เลือก Scopes ที่สำคัญ:
+   ✅ repo (Full control) - สำคัญที่สุด!  
+   ✅ workflow (แนะนำ)
+6. Generate token และ Copy ทันที
+7. วาง Token ในช่อง GitHub Token"""
         
         messagebox.showinfo("ช่วยเหลือ", help_text)
         webbrowser.open("https://github.com/settings/tokens")
@@ -458,7 +462,11 @@ class RepoManagerGUI:
             
         try:
             url = f"https://api.github.com/repos/{self.repo_owner.get()}/{self.repo_name.get()}"
-            headers = {'Authorization': f'token {self.github_token.get()}'}
+            headers = {
+                'Authorization': f'Bearer {self.github_token.get()}',
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
             response = requests.get(url, headers=headers)
             
             if response.status_code == 200:
@@ -487,8 +495,9 @@ class RepoManagerGUI:
             
             url = "https://api.github.com/user/repos"
             headers = {
-                'Authorization': f'token {self.github_token.get()}',
-                'Accept': 'application/vnd.github.v3+json'
+                'Authorization': f'Bearer {self.github_token.get()}',
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
             }
             
             data = {
@@ -974,8 +983,9 @@ class RepoManagerGUI:
                 
                 url = f"https://api.github.com/repos/{self.repo_owner.get()}/{self.repo_name.get()}/releases"
                 headers = {
-                    'Authorization': f'token {self.github_token.get()}',
-                    'Accept': 'application/vnd.github.v3+json'
+                    'Authorization': f'Bearer {self.github_token.get()}',
+                    'Accept': 'application/vnd.github.v3+json',
+                    'X-GitHub-Api-Version': '2022-11-28'
                 }
                 
                 data = {
@@ -1257,8 +1267,9 @@ class RepoManagerGUI:
             
             url = f"https://api.github.com/repos/{self.repo_owner.get()}/{self.repo_name.get()}/releases"
             headers = {
-                'Authorization': f'token {self.github_token.get()}',
-                'Accept': 'application/vnd.github.v3+json'
+                'Authorization': f'Bearer {self.github_token.get()}',
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
             }
             
             data = {
@@ -1330,7 +1341,11 @@ class RepoManagerGUI:
                 
                 # ทดสอบ Token
                 try:
-                    headers = {'Authorization': f'token {self.github_token.get()}'}
+                    headers = {
+                        'Authorization': f'Bearer {self.github_token.get()}',
+                        'Accept': 'application/vnd.github.v3+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    }
                     response = requests.get('https://api.github.com/user', headers=headers)
                     if response.status_code == 200:
                         user_data = response.json()
