@@ -5,6 +5,10 @@
 .env.test
 .env.production
 
+# Logs (may contain sensitive information)
+logs/
+*.log
+
 # Python
 __pycache__/
 *.py[cod]
